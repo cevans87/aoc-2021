@@ -1,0 +1,30 @@
+version: "3.9"
+services:
+  system:
+    build:
+      args:
+        - AOC21_PLATFORM
+        - AOC21_UBUNTU_TAG=rolling
+        - AOC21_USER=aoc21
+      context: .
+      target: system
+    cap_add:
+      - SYS_PTRACE
+    container_name: cevans87__aoc21__system
+    privileged: true
+    security_opt:
+      - seccomp:unconfined
+    volumes:
+      - .:/home/aoc21/aoc21
+      - $SSH_AUTH_SOCK:$SSH_AUTH_SOCK
+    image: cevans87/aoc21:system
+  user:
+    build:
+      args:
+        - AOC21_OCAML_VERSION=4.13.0
+      target: user
+    container_name: cevans87__aoc21__user
+    extends: system
+    volumes:
+      - .:/home/aoc21/aoc21
+    image: cevans87/aoc21:user
