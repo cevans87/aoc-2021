@@ -1,0 +1,7 @@
+(executables
+ (names p01)
+ (libraries Hemlock.Basis))
+
+(install
+ (section bin)
+ (files (p01.exe as p01)))
