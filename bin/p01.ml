@@ -32,9 +32,7 @@ let uns_stream_of_line_stream line_stream =
         | true -> Stream.Nil
         | false -> begin
             let line, line_stream = Stream.pop line_stream in
-            match (String.C.length line = 0L) with
-            | true -> f line_stream
-            | false -> Stream.Cons (Uns.of_string line, lazy (f line_stream))
+            Stream.Cons (Uns.of_string line, lazy (f line_stream))
           end
     end in
     lazy (f line_stream)
