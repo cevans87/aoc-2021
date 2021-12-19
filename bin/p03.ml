@@ -7,23 +7,23 @@ type jump =
 | Down of sint
 | Up of sint
 
-let byte_stream_of_bytes_stream bytes_stream =
-    let rec f i bytes bytes_stream = begin
-        match i = Bytes.Slice.length bytes with
+let byte_stream_of_bytes_slice_stream bytes_slice_stream =
+    let rec f i bytes_slice bytes_slice_stream = begin
+        match i = Bytes.Slice.length bytes_slice with
         | true -> begin
-            match Stream.is_empty bytes_stream with
+            match Stream.is_empty bytes_slice_stream with
             | true -> Stream.Nil
             | false -> begin
-                let bytes, bytes_stream = Stream.pop bytes_stream in
-                f 0L bytes bytes_stream
+                let bytes_slice, bytes_slice_stream = Stream.pop bytes_slice_stream in
+                f 0L bytes_slice bytes_slice_stream
               end
           end
         | false -> begin
-            let byte = Bytes.Slice.get i bytes in
-            Stream.Cons (byte, lazy (f (i + 1L) bytes bytes_stream))
+            let byte = Bytes.Slice.get i bytes_slice in
+            Stream.Cons (byte, lazy (f (i + 1L) bytes_slice bytes_slice_stream))
           end
     end in
-    lazy (f 0L (Bytes.Slice.init [||]) bytes_stream)
+    lazy (f 0L (Bytes.Slice.init [||]) bytes_slice_stream)
 
 let byte_stream_stream_of_byte_stream byte_stream =
     let rec f' byte_stream = begin
@@ -101,10 +101,7 @@ let bias_of_uns_stream_stream uns_stream_stream =
     let bias = Array.init (0L=:<Array.length accum) ~f:(fun _ -> 0L) in
     let rec f i = begin
         match (i = Array.length accum) with
-        | true -> begin
-            File.Fmt.stdout |> Array.fmt Uns.fmt accum |> String.fmt "\n" |> ignore;
-            bias
-          end
+        | true -> bias
         | false -> begin
             let () = begin
                 match (Array.get i accum) < mid with
@@ -166,7 +163,6 @@ let biased_uns_stream_of_uns_stream_stream biaser uns_stream_stream =
             let zeros = get_constant 0L 0L uns_stream_stream in
             let ones = get_constant 1L 0L uns_stream_stream in
             let total = zeros + ones in
-            File.Fmt.stdout |> Uns.fmt zeros |> String.fmt " " |> Uns.fmt ones |> ignore;
             match total = 0L with
             | true -> Stream.Nil
             | false -> begin
@@ -174,14 +170,8 @@ let biased_uns_stream_of_uns_stream_stream biaser uns_stream_stream =
                 | true -> Lazy.force (Stream.hd uns_stream_stream)
                 | false -> begin
                     match biaser zeros ones with
-                    | true -> begin
-                        File.Fmt.stdout |> String.fmt " Choose 0\n"|> ignore;
-                        Stream.Cons (0L, lazy (f (lazy (filter 0L uns_stream_stream))))
-                      end
-                    | false -> begin
-                        File.Fmt.stdout |> String.fmt " Choose 1\n"|> ignore;
-                        Stream.Cons (1L, lazy (f (lazy (filter 1L uns_stream_stream))))
-                      end
+                    | true -> Stream.Cons (0L, lazy (f (lazy (filter 0L uns_stream_stream))))
+                    | false -> Stream.Cons (1L, lazy (f (lazy (filter 1L uns_stream_stream))))
                   end
                 end
          end
@@ -196,8 +186,6 @@ let p03b_answer_of_uns_stream_stream uns_stream_stream =
     end in
     let o2 = f 0L (biased_uns_stream_of_uns_stream_stream Uns.( > ) uns_stream_stream) in
     let co2 = f 0L (biased_uns_stream_of_uns_stream_stream Uns.( <= ) uns_stream_stream) in
-    File.Fmt.stdout |> String.fmt "o2: " |> Uns.fmt o2 |> String.fmt "\n" |> ignore;
-    File.Fmt.stdout |> String.fmt "co2: " |> Uns.fmt co2 |> String.fmt "\n" |> ignore;
     o2 * co2
 
 let fmt_answer name answer =
@@ -215,7 +203,7 @@ let () =
     |> Bytes.Slice.of_string_slice
     |> File.of_path_hlt
     |> File.Stream.of_file
-    |> byte_stream_of_bytes_stream
+    |> byte_stream_of_bytes_slice_stream
     |> byte_stream_stream_of_byte_stream
     |> uns_stream_stream_of_byte_stream_stream
     |> fun uns_stream_stream ->
