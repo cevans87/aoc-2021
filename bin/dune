@@ -1,5 +1,5 @@
 (executables
- (names p01 p02 p15)
+ (names p01 p02 p03 p15)
  (libraries Hemlock.Basis))
 
 (install
@@ -7,4 +7,5 @@
  (files
   (p01.exe as p01)
   (p02.exe as p02)
+  (p03.exe as p03)
   (p15.exe as p15)))
