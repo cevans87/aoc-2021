@@ -56,11 +56,10 @@ let p02a_answer_of_jump_stream jump_stream =
         | true -> Sint.(hpos * depth)
         | false -> begin
             let jump, jump_stream = Stream.pop jump_stream in
-            let open Sint in
             match jump with
-            | Forward distance -> f (hpos + distance) depth jump_stream
-            | Down distance -> f hpos (depth + distance) jump_stream
-            | Up distance -> f hpos (depth - distance) jump_stream
+            | Forward distance -> f Sint.(hpos + distance) depth jump_stream
+            | Down distance -> f hpos Sint.(depth + distance) jump_stream
+            | Up distance -> f hpos Sint.(depth - distance) jump_stream
           end
     end in
     f 0L 0L jump_stream
@@ -71,11 +70,11 @@ let p02b_answer_of_jump_stream jump_stream =
         | true -> Sint.(hpos * depth)
         | false -> begin
             let jump, jump_stream = Stream.pop jump_stream in
-            let open Sint in
             match jump with
-            | Forward distance -> f aim (hpos + distance) (depth + (aim * distance)) jump_stream
-            | Down distance -> f (aim + distance) hpos depth jump_stream
-            | Up distance -> f (aim - distance) hpos depth jump_stream
+            | Forward distance ->
+              f aim Sint.(hpos + distance) Sint.(depth + (aim * distance)) jump_stream
+            | Down distance -> f Sint.(aim + distance) hpos depth jump_stream
+            | Up distance -> f Sint.(aim - distance) hpos depth jump_stream
           end
     end in
     f 0L 0L 0L jump_stream
@@ -97,7 +96,7 @@ let () =
     |> File.Stream.of_file
     |> token_stream_of_bytes_stream
     |> jump_stream_of_token_stream
-    |> function jump_stream ->
+    |> fun jump_stream ->
         jump_stream |> p02a_answer_of_jump_stream |> fmt_answer "p02a";
         jump_stream |> p02b_answer_of_jump_stream |> fmt_answer "p02b";
 

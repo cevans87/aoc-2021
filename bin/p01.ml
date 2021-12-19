@@ -84,7 +84,7 @@ let () =
     |> File.Stream.of_file
     |> line_stream_of_bytes_stream
     |> uns_stream_of_line_stream
-    |> function uns_stream ->
+    |> fun uns_stream ->
         uns_stream |> p01a_answer_of_uns_stream |> fmt_answer "p01a";
         uns_stream |> p01b_answer_of_uns_stream |> fmt_answer "p01b";
 
