@@ -209,6 +209,8 @@ let () =
     |> fun uns_stream_stream ->
         uns_stream_stream
         |> bias_of_uns_stream_stream
-        |> fun bias ->
-            p03a_answer_of_bias bias |> fmt_answer "p03a";
-            p03b_answer_of_uns_stream_stream uns_stream_stream |> fmt_answer "p03b";
+        |> p03a_answer_of_bias
+        |> fmt_answer "p03a";
+        uns_stream_stream
+        |> p03b_answer_of_uns_stream_stream
+        |> fmt_answer "p03b";
