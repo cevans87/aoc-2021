@@ -1,0 +1,25 @@
+opam-version: "2.0"
+name: "aoc21"
+version: "0.0.0"
+synopsis: "Advent of Code 2021"
+description: """
+Advent of Code 2021 using the Hemlock bootstrap library implemented in OCaml.
+"""
+maintainer: "Cameron Evans <cevans@branchtaken.net>"
+authors: ["Cameron Evans"]
+license: "MIT"
+homepage: "https://github.com/cevans87/aoc21"
+bug-reports: "https://github.com/cevans87/aoc21/issues"
+dev-repo: "git+https://github.com/cevans87/aoc21"
+tags: [ "org:cevans87" ]
+depends: [
+  "ocaml" {>= "4.13.0"}
+  "dune" {>= "2.9.0"}
+  "odoc" {build}
+  "topkg" {build}
+  "Hemlock" {>= "0.0.0"}
+]
+build: [
+  ["dune" "subst"] {pinned}
+  ["dune" "build" "-p" name "-j" jobs]
+]
